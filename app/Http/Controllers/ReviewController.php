@@ -87,6 +87,7 @@ class ReviewController extends Controller
         return redirect()->route('room.profile',[
             'id'=>$request->input('room_id'),
             'selected_room'=>null,
+            'reservation'=>null,
 
         ]);
 

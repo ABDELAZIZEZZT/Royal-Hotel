@@ -78,6 +78,7 @@
                             <th>update</th>
                             <th>add review</th>
                             <th>check out</th>
+                            <th>check in</th>
 
 
 
@@ -138,6 +139,18 @@
                                         <input type="hidden" name="room_id" value={{$reservation->room_id}}>
 
                                         <button>check out</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action={{ route('check.in') }} method="post">
+                                        @csrf
+                                       @method('POST')
+                                        <input type="hidden" name="id" value={{$reservation->id}}>
+                                        <input type="hidden" name="user_type" value={{$reservation->user_type}}>
+                                        <input type="hidden" name="user_id" value={{$reservation->user_id}}>
+                                        <input type="hidden" name="room_id" value={{$reservation->room_id}}>
+
+                                        <button>check in</button>
                                     </form>
                                 </td>
                                 <!-- Add more columns as needed -->

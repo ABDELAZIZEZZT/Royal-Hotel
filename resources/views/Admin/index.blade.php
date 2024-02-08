@@ -27,6 +27,7 @@
                 <li><a href="/Admin/web_user">web user</a></li>
                 <li><a href="/Admin/admins">admins</a></li>
                 <li><a href="/Admin/users">users</a></li>
+                <li><a href="/Admin/features">features</a></li>
                 <li><a href="/">get out</a></li>
                 @else
 

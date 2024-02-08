@@ -10,6 +10,7 @@ use App\Http\Controllers\userController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\featuresController;
 use App\Http\Middleware\AdminOrOwnerMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,14 @@ Route::middleware('adminOrOwner')->group(function(){
     Route::get('/Admin',[AdminController::class,'index'])->name('Admin.index');
     // Route::get('/Admin/get_room',[roomsController::class,'get_room'])->name('get.room');
 
+    Route::get('/Admin/users',[userController::class,'users'])->name('users');
+    Route::get('/Admin/add_p_user',[userController::class,'add_p_users'])->name('add.p_users');
+    Route::put('/Admin/Realyadd_p_user',[userController::class,'Realyadd_p_users'])->name('realy.add.p_user');
+    Route::get('/Admin/update/p_user{id}',[userController::class,'update_p_user'])->name('update.p_user');
+    Route::put('/Admin/Realyupdate_p_user{id}',[userController::class,'Realyupdate_p_user'])->name('Realyupdate.p_user');
+    Route::get('/Admin/delet_p_user{id}',[userController::class,'delete_p_user'])->name('delete.physical_user');
+
+
 
 });
 
@@ -42,6 +51,13 @@ Route::middleware('owner')->group(function (){
     Route::put('/Admin/update_about_/{id}',[AboutController::class,'realy_update_about'])->name('realy.update.about');
     Route::delete('/Admin/delet_about_/{id}',[AboutController::class,'delet_about'])->name('delete.about');
     Route::get('/Admin/about',[AboutController::class,'about'])->name('admin.about');
+
+    Route::get('/Admin/features',[featuresController::class,'features'])->name('admin.features');
+    Route::get('/Admin/add_feature',[featuresController::class,'add_feature_view']);
+    Route::put('/Admin/add_feature',[featuresController::class,'add_feature'])->name('realy.add.feature');
+    Route::get('/Admin/features/{id}',[featuresController::class,'features_update_view'])->name('feature.update');
+    Route::put('/Admin/update_features',[featuresController::class,'features_update'])->name('realy.update.feature');
+    Route::delete('/Admin/features/delete',[featuresController::class,'feature_delete'])->name('feature.delete');
 
 
     Route::get('/Admin/rooms',[roomsController::class,'rooms'])->name('Admin.rooms');
@@ -87,12 +103,6 @@ Route::middleware('admin')->group(function (){
 
 
 
-    Route::get('/Admin/users',[userController::class,'users'])->name('users');
-    Route::get('/Admin/add_p_user',[userController::class,'add_p_users'])->name('add.p_users');
-    Route::put('/Admin/Realyadd_p_user',[userController::class,'Realyadd_p_users'])->name('realy.add.p_user');
-    Route::get('/Admin/update/p_user{id}',[userController::class,'update_p_user'])->name('update.p_user');
-    Route::put('/Admin/Realyupdate_p_user{id}',[userController::class,'Realyupdate_p_user'])->name('Realyupdate.p_user');
-    Route::get('/Admin/delet_p_user{id}',[userController::class,'delete_p_user'])->name('delete.physical_user');
 
 
     Route::get('/Admin/reservation',[ReservationController::class,'reservation'])->name('reservation');

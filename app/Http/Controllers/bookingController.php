@@ -62,12 +62,16 @@ class bookingController extends Controller
         }
 
 
+        // $email=auth()->user()->email;
+        // $this->send_email($email,$room_number);
 
 
         // dd($price);
         $user_type="web";
-        // dd($request->all());
+
         if($request->input('id')!=null){
+            $id=$request->input('id');
+
             $reservation=Reservation::find($id);
             // dd($reservation);
             $reservation->user_id=auth()->user()->id;
@@ -101,11 +105,10 @@ class bookingController extends Controller
         $user->check_in='1';
         $user->save();
 
-        $email=auth()->user()->email;
+
         $room_number=$request->input('room_number');
 
 
-        $this->send_email($email,$room_number);
 
         return redirect()->route('rooms')->with('success', 'reservation is done teh room number :'.$room_number);
 

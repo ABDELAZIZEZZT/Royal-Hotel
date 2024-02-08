@@ -35,7 +35,8 @@
                                 <div class="avatar avatar-sm">
                                     <div id="imageSlider" class="carousel slide" data-ride="carousel" style="width: 90%; max-width: 600px;"> <!-- Adjust max-width as needed -->
                                         <div class="carousel-inner">
-                                            {{$hasPhoto = !empty($room->photo);}}
+
+                                            {{$hasPhoto = count($room->Room_photos)}}
                                             @if ($hasPhoto)
                                             <div class="carousel-item active">
                                                 <img src="{{asset('storage/photos/' .$room->Room_photos[0]->p_photo)}}" class="d-block w-100" alt="First slide">
@@ -98,6 +99,9 @@
                                                     <input type="hidden" name="price" value="{{$room->price}}">
                                                     <input type="hidden" name="total_price" value="{{$total_price}}">
                                                     <input type="hidden" name="selected_room" value="{{$selected_room}}">
+                                                    @if ($reservation!=null)
+                                                     <input type="hidden" name="id" value="{{$reservation->id}}">
+                                                    @endif
 
 
 
@@ -123,10 +127,7 @@
                             <form action="{{route('add.review')}}" method="post">
                             @csrf
                             @method("post")
-                            <input type="hidden" name="room_id" value={{$room->id}}>
-                            <input type="hidden" name="room_id" value={{$room->id}}>
-                            <input type="hidden" name="room_id" value={{$room->id}}>
-                            <input type="hidden" name="room_id" value={{$room->id}}>
+
                             <input type="hidden" name="room_id" value={{$room->id}}>
                                 <div class="container">
                                     <div class="row">

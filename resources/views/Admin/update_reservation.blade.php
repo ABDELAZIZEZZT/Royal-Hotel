@@ -16,7 +16,7 @@
     </ul>
 @endif
 
-{{-- @dd($reservations); --}}
+
 <div class="row">
     <div class="col-md-12">
         <div class="box">
@@ -50,7 +50,23 @@
                         <input type="datetime-local" name="check_out" value={{Carbon\Carbon::parse($reservation->check_out)->format('Y-m-d\TH:i') }} >
                         <input type="hidden" name="user_type" value={{$reservation->user_type}}>
                         <input type="hidden" name="id" value={{$reservation->id}}>
-                        <button type="submit">updete</button>
+                        <strong>your selected features :</strong>
+                        @foreach ($selected_feature as $feature )
+                        <div class="form-row">
+                            <div class="control-group col-md-6">
+                                <label>{{$feature->feature}} {{$feature->price}}$ for 1 guest</label>
+                            </div>
+                        </div>
+                    @endforeach
+                    @foreach ($features as $feature )
+                    <div class="form-row">
+                        <div class="control-group col-md-6">
+                            <label>{{$feature->feature}} {{$feature->price}}$ for 1 guest</label>
+                            <input type="checkbox" id="checkboxId" name="feature[]" value="{{$feature->feature}}">
+                        </div>
+                    </div>
+                    @endforeach
+                    <button type="submit">updete</button>
                     </form>
                     <h1><a href="/Admin/reservation">return</a></h1>
             </div>

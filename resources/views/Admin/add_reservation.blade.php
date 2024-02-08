@@ -16,7 +16,7 @@
     </ul>
 @endif
 <h5><a href="/Admin/add_p_user">add user</a></h5>
-{{-- @dd($reservations); --}}
+
 <div class="row">
     <div class="col-md-12">
         <div class="box">
@@ -43,7 +43,14 @@
                         <input type="datetime-local" name="check_out" required>
 
 
-
+                        @foreach ($features as $feature )
+                            <div class="form-row">
+                                <div class="control-group col-md-6">
+                                    <label>{{$feature->feature}} {{$feature->price}}$ for 1 guest</label>
+                                    <input type="checkbox" id="checkboxId" name="feature[]" value="{{$feature->feature}}">
+                                </div>
+                            </div>
+                        @endforeach
 
                         <button type="submit">Add</button>
                     </form>

@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Models\Physical_user;
 use App\Models\User;
 use App\Mail\WelcomeEmail;
+use App\Models\Feature;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -59,7 +60,8 @@ class ReservationController extends Controller
 
     }
     function add_reservation(){
-        return view('Admin.add_reservation');
+        $features=Feature::all();
+        return view('Admin.add_reservation',['features'=>$features]);
 
     }
     function Realyadd_reservation(Request $request){
@@ -67,12 +69,16 @@ class ReservationController extends Controller
         $number_of_guests=$request->input('number_of_guests');
         $room_type=$request->input('room_type');
         $user_id=$request->input('user_id');
+        $user=Physical_user::find($user_id);
         $check_in=Carbon::parse($request->input('check_in'));
         $check_out=Carbon::parse($request->input('check_out'));
         $deffrant_in_days= $check_out->diffInDays($check_in);
         $timezone = new \DateTimeZone('Egypt');
         $dateTime = new \DateTime('now', $timezone);
         $currentDateTime = $dateTime->format('Y-m-d');
+        if($user==null){
+            return redirect()->route('add.reservation')->with('success', 'not valid user_id');
+        }
         // dd($check_in->format('Y-m-d'));
         if($check_in->format('Y-m-d')<$currentDateTime){
             return redirect()->route('add.reservation')->with('success', 'not valid check in date');
@@ -112,6 +118,18 @@ class ReservationController extends Controller
         $total_price=$deffrant_in_days*$price;
         // dd($price);
         $user_type="physical";
+        $features=$request->input('feature');
+        if($features!=null){
+            $feature_id=[];
+            foreach($features as $feature){
+                $id=Feature::where('feature',$feature)->first()->id;
+               array_push($feature_id,$id);
+            }
+            foreach ($features as $feature){
+                $price=Feature::where('feature',$feature)->first()->price;
+                $total_price+=($price*($request->input('number_of_guests')));
+            }
+        }
 
         $reservation=Reservation::create([
             'user_p_id'=>$user_id,
@@ -122,6 +140,9 @@ class ReservationController extends Controller
             'price'=>$total_price,
             'user_type'=>$user_type,
         ]);
+        if($features!=null){
+            $reservation->features()->attach($feature_id);
+        }
 
 
 
@@ -136,8 +157,17 @@ class ReservationController extends Controller
         if($reservation->status=='started'){
             return redirect()->route('reservation')->with('success', 'reservation is started you cant update it make new one');
         }
+        $reservation_f = Reservation::with('features')->find($id);
+        $features=Feature::all();
+        $selected_feature=$reservation_f->features;
+        // dd($selected_feature);
         $room=Room::find($reservation->room_id);
-        return view('Admin.update_reservation',['reservation'=>$reservation,'room'=>$room]);
+        return view('Admin.update_reservation',[
+            'reservation'=>$reservation,
+            'room'=>$room,
+            'features'=>$features,
+            'selected_feature'=>$selected_feature,
+        ]);
 
     }
     function Realyupdate_reservation(Request $request ,$id){
@@ -265,7 +295,7 @@ class ReservationController extends Controller
        }
         $reservation->status='started';
         $reservation->save();
-        // dd( $this->send_email());
+        // dd($request->input('user_type') );
         if($request->input('user_type')=='physical'){
             $user=Physical_user::find($request->input('user_id'));
             $user->check_in='1';
@@ -328,7 +358,7 @@ class ReservationController extends Controller
 
             foreach($rooms as $room){
                $id=$room->id;
-               $reservations=Reservation::where('room_id','=',$id)->where('status','!=','expierd')->where('status','!=','started');
+               $reservations=Reservation::where('room_id','=',$id)->where('status','!=','expierd')->get();
                if($reservations==null){ break;}
                foreach($reservations as $reservation){
                 if($reservation->id==$request->input('reservation_id')){
@@ -340,7 +370,10 @@ class ReservationController extends Controller
                     && $check_out > $reservation->check_out)){
                         continue;
                     }else{
-                        $room->delete();
+                        $rooms = $rooms->reject(function ($value) use ($id) {
+                            // dd($value->id);
+                            return $value->id == $id;
+                        });
                     }
                 }
 
@@ -384,7 +417,7 @@ class ReservationController extends Controller
             if($check_out<=$check_in){
                 return redirect()->route('rooms')->with('success', 'not valid date ');
             }
-            $rooms=Room::where('num_guests','=',$request->input('guest'))->where('status','=','ready')->get();
+            $rooms=Room::where('num_guests','=',$request->input('guest'))->get();
 
 
             if(count($rooms)==0){
@@ -393,8 +426,13 @@ class ReservationController extends Controller
             // dd($rooms);
             foreach($rooms as $room){
                $id=$room->id;
-               $reservations=Reservation::where('room_id','=',$id)->where('status','!=','expierd');
-               if($reservations==null){ break;}
+               $reservations=Reservation::where('room_id','=',$id) ->where(function ($query) {
+                $query->where('status', '!=', 'expired')
+                    ->orWhereNull('status');
+                })->get();
+
+               if($reservations==null){ continue;}
+            //    dd($reservations);
                foreach($reservations as $reservation){
                     if(($check_in < $reservation->check_in
                     && $check_out < $reservation->check_in)
@@ -402,7 +440,13 @@ class ReservationController extends Controller
                     && $check_out > $reservation->check_out)){
                         continue;
                     }else{
-                        $room->delete();
+
+                        $rooms = $rooms->reject(function ($value) use ($id) {
+                            // dd($value->id);
+                            return $value->id == $id;
+                        });
+
+                        // dd($rooms);
                     }
                 }
 
@@ -415,7 +459,7 @@ class ReservationController extends Controller
             // $check_out=Carbon::parse($request->input('check_out'));
             // $deffrant_in_days= $check_out->diffInDays($check_in);
             // $total_price=$deffrant_in_days*$price;
-
+            // dd($rooms);
             return view('room',[
                 'rooms'=>$rooms,
                 's_check_in'=>$check_in,

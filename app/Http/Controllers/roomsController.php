@@ -19,15 +19,18 @@ class roomsController extends Controller
 
 
 
-            return view('room',['rooms'=>$rooms,'s_check_in'=>null,'s_check_out'=>null, 'selected_room'=>null]);
+            return view('room_profile',[
+                'rooms'=>$rooms,
+                's_check_in'=>null,
+                's_check_out'=>null,
+                'selected_room'=>null]);
         }else{
-
            $selected_room=Room::find($request->input('room_id'));
 
            $reservation=Reservation::find($request->input('reservation_id'));
             // dd($reservation);
            $rooms=Room::orderBy('periority', 'asc')->paginate(5);
-           return view('room',[
+           return view('room_profile',[
             'rooms'=>$rooms,
             's_check_in'=>$reservation->check_in,
             's_check_out'=>$reservation->check_out,
@@ -41,8 +44,9 @@ class roomsController extends Controller
     function room_profile(Request $request){
 
         if($request->method()==='POST'){
-            // dd($request->all());
+            // dd($request);
             $selected_room=Room::where('id',$request->input('id'));
+
             $id=$request->input('id');
             $room=Room::find($id);
             // dd($request->input('check_in'));
@@ -61,6 +65,8 @@ class roomsController extends Controller
             $room->save();
 
             $reservation=Reservation::where('room_id',$id)->first();
+
+
             if($request->input('check_in')!=null && $request->input('check_out')!=null){
                 $check_in=Carbon::parse($request->input('check_in'));
                 $check_out=Carbon::parse($request->input('check_out'));
@@ -78,7 +84,7 @@ class roomsController extends Controller
                     'rating'=>$room->review,
                     'check_in'=>$check_in,
                     'check_out'=>$check_out,
-                    'selected_room'=>$request->input('id')
+                    'selected_room'=>$request->input('id'),
 
 
                 ]);
@@ -119,14 +125,14 @@ class roomsController extends Controller
             }
             $room->save();
 
-            $reservations=Reservation::where('room_id',$id)->get();
 
+            // dd($reservations);
             return view('room_profile',[
                 'selected_room'=>null,
                 'features'=>$features,
                 'room'=>$room,
                 'reviews'=>$reviews,
-                'reservations'=>$reservations,
+                'reservation'=>null,
                 'rating'=>$room->review,
                 'check_in'=>null,
                 'check_out'=>null,

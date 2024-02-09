@@ -85,7 +85,7 @@ class ReviewController extends Controller
         }
 
         return redirect()->route('room.profile',[
-            'id'=>$request->input('room_id'),
+            'room_id'=>$request->input('room_id'),
             'selected_room'=>null,
             'reservation'=>null,
 
@@ -93,10 +93,13 @@ class ReviewController extends Controller
 
     }
     function user_delete_review(Request $request ){
+
         $id=$request->input('review_id');
+
         $review=Review::find($id);
+        // dd($review);
         $review->delete();
-        return redirect()->route('room.profile',['id'=>$request->input('room_id'), 'selected_room'=>null,]);
+        return redirect()->route('room.profile',['room_id'=>$request->input('room_id'), 'selected_room'=>null,]);
     }
 
     function user_update_review(Request $request){
@@ -105,7 +108,7 @@ class ReviewController extends Controller
         $review->rating_on_room=$request->input('rating_on_room');
         $review->save();
 
-        return redirect()->route('room.profile',['id'=>$request->input('room_id'),'selected_room'=>null,]);
+        return redirect()->route('room.profile',['room_id'=>$request->input('room_id'),'selected_room'=>null,]);
 
     }
 }

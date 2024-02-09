@@ -385,7 +385,7 @@ class ReservationController extends Controller
             // $deffrant_in_days= $check_out->diffInDays($check_in);
             // $total_price=$deffrant_in_days*$price;
 
-            return view('room',[
+            return view('rooms',[
                 'rooms'=>$rooms,
                 's_check_in'=>$check_in,
                 's_check_out'=>$check_out,
@@ -460,7 +460,7 @@ class ReservationController extends Controller
             // $deffrant_in_days= $check_out->diffInDays($check_in);
             // $total_price=$deffrant_in_days*$price;
             // dd($rooms);
-            return view('room',[
+            return view('rooms',[
                 'rooms'=>$rooms,
                 's_check_in'=>$check_in,
                 's_check_out'=>$check_out,

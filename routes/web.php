@@ -141,9 +141,12 @@ Route::middleware('auth')->group(function (){
     Route::post('/booking', [bookingController::class,'index'])->name('booking.view');
     Route::post('/booking/check', [bookingController::class,'check_booking'])->name('booking.check');
     Route::match(['post','get'],'/room/profile', [roomsController::class,'room_profile'])->name('room.profile');
-    Route::post('/review', [ReviewController::class,'index'])->name('add.review');
+    Route::get('/review', [ReviewController::class,'index'])->name('add.review');
 
 });
+Route::match(['put','post'],'/get/rooms', [ReservationController::class,'get_room'])->name('get.room');
+Route::match(['post','get'] ,'/rooms', [roomsController::class,'index'])->name('rooms');
+
 Route::middleware('guest')->group(function(){
     Route::get('/login/view', [AuthController::class,'login_view'])->name('login.view');
     Route::post('/login', [AuthController::class,'login'])->name('login');
@@ -158,7 +161,6 @@ Route::middleware('guest')->group(function(){
 });
 
 
-Route::match(['put','post'],'/get/rooms', [ReservationController::class,'get_room'])->name('get.room');
 
 
 Route::get('/contact', [loginController::class,'index']);
@@ -177,6 +179,5 @@ Route::get('/about', [aboutController::class,'about_view']);
 
 Route::get('/', [userController::class,'index'])->name('index');
 
-Route::match(['post','get'] ,'/rooms', [roomsController::class,'index'])->name('rooms');
 
 

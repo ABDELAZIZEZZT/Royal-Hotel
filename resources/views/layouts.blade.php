@@ -42,7 +42,7 @@
                 <li><a href="/login/view">Login</a></li>
                 @endif
 
-                <li><a href="/contact">Contact Us</a></li>
+               
                 @if(Auth::check() && Auth::user()->role === 'user')
                 <li><a href="/profile{{Auth::user()->id}}">profile</a></li>
                 @endif

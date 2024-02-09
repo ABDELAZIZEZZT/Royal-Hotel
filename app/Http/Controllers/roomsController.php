@@ -16,38 +16,45 @@ class roomsController extends Controller
     function index(Request $request){
         if($request->method()==="GET"){
             $rooms=Room::orderBy('periority', 'desc')->paginate(20);
-
-
-
-            return view('room_profile',[
+            return view('rooms',[
                 'rooms'=>$rooms,
                 's_check_in'=>null,
                 's_check_out'=>null,
                 'selected_room'=>null]);
         }else{
-           $selected_room=Room::find($request->input('room_id'));
+            $selected_room=Room::find($request->input('room_id'));
 
-           $reservation=Reservation::find($request->input('reservation_id'));
-            // dd($reservation);
-           $rooms=Room::orderBy('periority', 'asc')->paginate(5);
-           return view('room_profile',[
-            'rooms'=>$rooms,
-            's_check_in'=>$reservation->check_in,
-            's_check_out'=>$reservation->check_out,
-            'selected_room'=>[$selected_room],
-            'reservation_id'=>$reservation->id
+            $reservation=Reservation::find($request->input('reservation_id'));
+            $check_in=Carbon::parse($reservation->check_in);
+            $timezone = new \DateTimeZone('Egypt');
+            $dateTime = new \DateTime('now', $timezone);
+            $currentDateTime = $dateTime->format('Y-m-d');
+            if($check_in>$currentDateTime){
+                // dd($reservation);
+               $rooms=Room::orderBy('periority', 'asc')->paginate(5);
+               return view('rooms',[
+                'rooms'=>$rooms,
+                's_check_in'=>$reservation->check_in,
+                's_check_out'=>$reservation->check_out,
+                'selected_room'=>[$selected_room],
+                'reservation_id'=>$reservation->id
 
 
-        ]);
+            ]);
+            }
+            else{
+                return redirect()->route('user.profile')->with('success','you cant update the check in');
+            }
         }
     }
     function room_profile(Request $request){
 
         if($request->method()==='POST'){
-            // dd($request);
+            // dd($request->all());
             $selected_room=Room::where('id',$request->input('id'));
 
             $id=$request->input('id');
+
             $room=Room::find($id);
             // dd($request->input('check_in'));
             $reviews=Review::where('room_id',$id)->get();
@@ -63,10 +70,15 @@ class roomsController extends Controller
                 $room->review=0;
             }
             $room->save();
+            // dd($id);
+            if($request->input('reservervation_id')!=null){
 
-            $reservation=Reservation::where('room_id',$id)->first();
+                $reservation=Reservation::find($request->input('reservation_id'));
+            }else{
+                $reservation=Reservation::where('room_id',$id)->first();
+            }
 
-
+            // dd($reservation);
             if($request->input('check_in')!=null && $request->input('check_out')!=null){
                 $check_in=Carbon::parse($request->input('check_in'));
                 $check_out=Carbon::parse($request->input('check_out'));
@@ -105,25 +117,24 @@ class roomsController extends Controller
                 'selected_room'=>null,
             ]);
         }else{
-            // dd($request->all());
+
             $features=Feature::all();
-            $id=$request->input('id');
+            $id=$request->input('room_id');
+
             $room=Room::find($id);
+            $reviews=$room->reviews;
+
 
             // dd($request->input('check_in'));
-            $reviews=Review::where('room_id',$id)->get();
-            $review=0;
-            foreach($reviews as $re){
-               $review+= $re->rating_on_room;
-            }
-            if($reviews->count()!=0){
-                $room_review=$review/($reviews->count());
-                $room_review=round($room_review, 2);
-                $room->review=$room_review;
-            }else{
-                $room->review=0;
-            }
-            $room->save();
+
+
+
+
+            $check_in=Carbon::parse($request->input('check_in'));
+            $check_out=Carbon::parse($request->input('check_out'));
+            $deffrant_in_days= $check_out->diffInDays($check_in);
+            $total_price=$deffrant_in_days*($room->price);
+            $features=Feature::all();
 
 
             // dd($reservations);
@@ -134,9 +145,9 @@ class roomsController extends Controller
                 'reviews'=>$reviews,
                 'reservation'=>null,
                 'rating'=>$room->review,
-                'check_in'=>null,
-                'check_out'=>null,
-                'total_price'=>null
+                'check_in'=>$request->input('check_in'),
+                'check_out'=>$request->input('check_out'),
+                'total_price'=>$total_price
             ]);
 
         }

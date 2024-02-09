@@ -99,8 +99,10 @@
                                                     <input type="hidden" name="price" value="{{$room->price}}">
                                                     <input type="hidden" name="total_price" value="{{$total_price}}">
                                                     <input type="hidden" name="selected_room" value="{{$selected_room}}">
+
                                                     @if ($reservation!=null)
                                                      <input type="hidden" name="id" value="{{$reservation->id}}">
+
                                                     @endif
 
 
@@ -118,15 +120,9 @@
                         </div>
                         <h5>add comment and rating from 5</h5>
                         @if(Auth::check() && Auth::user()->role === 'user')
-                            <form action={{route('booking.view')}} method="post">
-                                @csrf
-                                @method('POST')
-                                <button type="submit" class="btn btn-denger">Book Now</button>
-                            </form>
 
-                            <form action="{{route('add.review')}}" method="post">
-                            @csrf
-                            @method("post")
+                            <form action="{{route('add.review')}}" method="get">
+                          
 
                             <input type="hidden" name="room_id" value={{$room->id}}>
                                 <div class="container">

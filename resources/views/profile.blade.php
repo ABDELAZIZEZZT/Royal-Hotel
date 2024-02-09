@@ -93,8 +93,7 @@
 
                                                     <td>
                                                         <form action={{route('room.profile')}} method="get">
-                                                             @csrf
-                                                            @method("POST")
+                                                           
 
 
                                                             <input type="hidden" name="id" value="{{$review->room_id}}">
@@ -153,13 +152,9 @@
                                                    </td>
                                                    <td>
 
-                                                        <form action={{route('room.profile')}} method="POST">
+                                                        <form action={{route('room.profile')}} method="get">
 
-                                                            @csrf
-                                                            @method("POST")
-
-
-                                                            <input type="hidden" name="id" value="{{$review->room_id}}">
+                                                            <input type="hidden" name="room_id" value="{{$reservation->room_id}}">
                                                             <input type="hidden" name="reservation" value="{{}}">
                                                             <button>add review</button>
                                                         </form

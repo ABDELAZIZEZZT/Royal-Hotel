@@ -18,7 +18,7 @@
         <div id="login">
             <div class="container">
                 <div class="section-header">
-                    <h2>reset your password</h2>
+                    check your email
 
                 </div>
                     <div class="col-md-6">

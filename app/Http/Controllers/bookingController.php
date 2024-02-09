@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
 class bookingController extends Controller
 {
     function index(Request $request){
-
+        // dd($request->all());
         if($request->input('check_in')==null){
             return redirect()->route('rooms')->with('success','please select your check in and check out');
         }
@@ -28,6 +28,7 @@ class bookingController extends Controller
                 $total_price_f+=($price*($request->input('num_guests')));
             }
         }
+
         // dd($request->all());
 
         return view('booking',[
@@ -71,6 +72,8 @@ class bookingController extends Controller
 
         if($request->input('id')!=null){
             $id=$request->input('id');
+            // dd($request->all());
+            $this->send_email('',$room_number);
 
             $reservation=Reservation::find($id);
             // dd($reservation);
@@ -83,6 +86,9 @@ class bookingController extends Controller
             $reservation->user_type=$user_type;
             $reservation->save();
         }else{
+            // dd($request);
+
+            $this->send_email('',$room_number);
             $reservation=Reservation::create([
                 'user_id'=>auth()->user()->id,
                 'room_id'=>$room_id,
